@@ -1,0 +1,8 @@
+Recommend Count:12, Buy item threshold:50, SourceDataRatio:0.5, TestDataRange:[100000,200000]
+Recall:39.41926365034607%
+
+Recommend Count:12, Buy item threshold:80, SourceDataRatio:0.5, TestDataRange:[100000,200000]
+Recall:41.97540502435273%
+
+Recommend Count:12, Buy item threshold:100, SourceDataRatio:0.5, TestDataRange:[100000,200000]
+Recall:43.456941168931046%

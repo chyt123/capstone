@@ -1,0 +1,5 @@
+1. Duplicate record in Sample items(which means be clicked several times)? Should add weight to the related items.
+2. Integrate buy-items and click-items  (Complete)
+3. Buying with a larger quantity should add more weight
+4. Try Matrix Factorization
+5. Improve performance of preprocessing and recommendation. Use database? Map-Reduce?
