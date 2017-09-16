@@ -1,9 +1,12 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
-import database.LocalFileStorage;
-import model.IdSet;
-import processor.*;
+import ycheng.database.LocalFileStorage;
+import ycheng.model.IdSet;
+import ycheng.service.RecommendService;
+import ycheng.util.Recommender;
 
+import javax.ws.rs.QueryParam;
 import java.io.IOException;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -20,10 +23,12 @@ public class TestPre {
 //                .next()
 //                .calculateItemSim();
 
-
-        test(12, 50, 0.5, 100000, 200000);
-        test(12, 80, 0.5, 100000, 200000);
-        test(12, 100, 0.5, 100000, 200000);
+        RecommendService s = new RecommendService();
+        Map<String, Object> m = s.train("itemknn");
+        System.out.println(m.get("time"));
+//        test(12, 50, 0.5, 100000, 200000);
+//        test(12, 80, 0.5, 100000, 200000);
+//        test(12, 100, 0.5, 100000, 200000);
 
 
     }
@@ -77,7 +82,7 @@ public class TestPre {
     private static int core(IdSet<Integer> idSet, Recommender recommender, int limit, double sourceDataRatio, int threshold) {
         int size = idSet.getSet().size();
         if (idSet.getSet().size() <= 1) return -1;
-        int recall = recommender.recommendTest(idSet, limit, (int)(size * sourceDataRatio), threshold);
-        return recall;
+        //int recall = recommender.recommendTest(idSet, limit, (int)(size * sourceDataRatio), threshold);
+        return -1;
     }
 }

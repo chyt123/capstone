@@ -3,3 +3,8 @@
 3. Buying with a larger quantity should add more weight
 4. Try Matrix Factorization
 5. Improve performance of preprocessing and recommendation. Use database? Map-Reduce?
+
+负样本 推荐了没有点击
+一个用户买了很多很多商品要去掉
+
+对用户聚类

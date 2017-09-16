@@ -6,3 +6,52 @@ Recall:41.97540502435273%
 
 Recommend Count:12, Buy item threshold:100, SourceDataRatio:0.5, TestDataRange:[100000,200000]
 Recall:43.456941168931046%
+
+
+
+
+
+
+
+
+{
+	"algo":"itemknn",
+	"testFile":"yoochoose-test.dat",
+	"recommendNum":8,
+	"simThreshold":200,
+    "sourceDataRatio":0.5,
+    "sourceDataMin":150000,
+    "sourceDataMax":200000
+}
+
+
+
+{
+  "recall": 0.3898803491207804,
+  "precision": 0.08285200872801951,
+  "processTime": 4.686818123475805
+}
+
+
+
+{
+	"algo":"itemknn",
+	"sourceData":[214838441, 214862111],
+	"recommendNum":9
+}
+
+
+{
+  "res": [
+    214852040,
+    214840820,
+    214691458,
+    214843410,
+    214862081,
+    214840815,
+    214862090,
+    214843687,
+    214840790
+  ],
+  "time": 1
+}
