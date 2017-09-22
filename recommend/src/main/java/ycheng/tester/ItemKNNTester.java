@@ -11,6 +11,8 @@ import ycheng.util.Recommender;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -18,14 +20,15 @@ import java.util.stream.Stream;
  * Created by ycheng on 9/16/17.
  */
 public class ItemKNNTester implements AlgorithmTester {
-    private static ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);;
+    private static ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     @Override
     public void preprocess(String srcFile) {
         if (LocalFileStorage.isExist(LocalFileStorage.ITEM_SET_BY_USER_TEST))
             return;
         Normalizer normalizer = new Normalizer();
-        try {
-            normalizer.createItemSetByEachUser(LocalFileStorage.read(srcFile), LocalFileStorage.ITEM_SET_BY_USER_TEST);
+        try (Stream<String> stream = LocalFileStorage.read(srcFile)){
+            List<String> list = Arrays.asList(stream.toArray(String[]::new));
+            normalizer.createItemSetByEachUser(list, LocalFileStorage.ITEM_SET_BY_USER_TEST);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -53,8 +56,8 @@ public class ItemKNNTester implements AlgorithmTester {
                     });
 
             TestResult t = new TestResult();
-            t.setRecall((double)s[0] / (double)s[3] / 10000.0);
-            t.setPrecision((double)s[1] / (double)s[3] / 10000.0);
+            t.setRecall((double) s[0] / (double) s[3] / 10000.0);
+            t.setPrecision((double) s[1] / (double) s[3] / 10000.0);
             t.setProcessTime((double)s[2] / (double)s[3]);
             return t;
 
@@ -85,7 +88,7 @@ public class ItemKNNTester implements AlgorithmTester {
     private static int[] core(IdSet<Integer> idSet, Recommender recommender, int limit, double sourceDataRatio, int threshold) {
         int size = idSet.getSet().size();
         if (idSet.getSet().size() <= 1) return null;
-        int[] stat = recommender.recommendTest(idSet, limit, (int)(size * sourceDataRatio), threshold);
+        int[] stat = recommender.recommendTest(idSet, limit, (int)(size * sourceDataRatio), threshold, "itemknn");
         return stat;
     }
 }

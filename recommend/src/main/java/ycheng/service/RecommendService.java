@@ -17,6 +17,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Created by ycheng on 9/16/17.
@@ -49,14 +50,25 @@ public class RecommendService {
         RecommendAlgorithmFactory factory = new RecommendAlgorithmFactory();
         RecommendAlgorithm algo = factory.getAlgo(algoS);
         Date start = new Date();
-        try {
-            algo.train(LocalFileStorage.read(LocalFileStorage.SOURCE_BUY_DATA),
-                    LocalFileStorage.read(LocalFileStorage.SOURCE_CLICK_DATA));
-
+        List<String> buyRecords;
+        List<String> clickRecords;
+        try (Stream<String> stream = LocalFileStorage.read(LocalFileStorage.SOURCE_BUY_DATA)){
+            buyRecords = Arrays.asList(stream.toArray(String[]::new));
         } catch (IOException e) {
             e.printStackTrace();
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
+
+
+        try (Stream<String> stream2 = LocalFileStorage.read(LocalFileStorage.SOURCE_CLICK_DATA)) {
+            clickRecords = Arrays.asList(stream2.toArray(String[]::new));
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
+        }
+
+        algo.train(buyRecords, clickRecords);
+
         Date end = new Date();
         Map<String, Object> map = new HashMap<>();
         map.put("time", end.getTime() - start.getTime());

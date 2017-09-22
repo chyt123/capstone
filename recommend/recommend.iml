@@ -67,5 +67,6 @@
     <orderEntry type="library" name="Gradle: org.apache.logging.log4j:log4j-core:2.5" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.logging.log4j:log4j-api:2.5" level="project" />
     <orderEntry type="library" name="Gradle: org.projectlombok:lombok:1.16.10" level="project" />
+    <orderEntry type="module" module-name="JGibbLDA-v.1.0" />
   </component>
 </module>

@@ -16,11 +16,11 @@ import java.util.stream.Stream;
  */
 public class ItemKNN implements RecommendAlgorithm{
     @Override
-    public void train(Stream buyRecords, Stream clickRecords) {
+    public void train(List<String> buyRecords, List<String> clickRecords) {
         Normalizer normalizer = new Normalizer();
         normalizer.createItemSetByEachUser(buyRecords, LocalFileStorage.ITEM_SET_BY_USER_BUY);
-        normalizer.createItemSetByEachUser(clickRecords, LocalFileStorage.ITEM_SET_BY_USER_CLICK);
         normalizer.createUserSetEachItem(buyRecords, LocalFileStorage.USER_SET_BY_ITEM_BUY);
+        normalizer.createItemSetByEachUser(clickRecords, LocalFileStorage.ITEM_SET_BY_USER_CLICK);
         normalizer.createUserSetEachItem(clickRecords, LocalFileStorage.USER_SET_BY_ITEM_CLICK);
 
         Calculator calculator = new Calculator();

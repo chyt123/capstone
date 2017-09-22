@@ -22,7 +22,8 @@ public class Application implements Daemon {
     private static DaemonContext context;
     private static Server jettyServer;
     private static Properties properties;
-    private static Recommender recommender = new Recommender();
+    private static Recommender recommender = new Recommender(false);
+
 
     public static synchronized Properties getProperties() {
         if (properties == null) {
@@ -49,6 +50,8 @@ public class Application implements Daemon {
         return recommender;
     }
 
+
+
     @Override
     public void init(DaemonContext context) throws DaemonInitException, Exception {
         Application.context = context;
@@ -64,6 +67,8 @@ public class Application implements Daemon {
         jettyServer = createJettyServer(
                 Integer.parseInt(properties.getProperty("web.port")),
                 properties.getProperty("web.package"));
+
+
     }
 
     @Override

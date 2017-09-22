@@ -13,6 +13,14 @@ public class RecommendTestFactory {
             return new ItemKNNTester();
         }
 
+        if (name.equalsIgnoreCase("popularity")) {
+            return new PopularityBasedTester();
+        }
+
+        if (name.equalsIgnoreCase("lda")) {
+            return new LDATester();
+        }
+
         return null;
     }
 }

@@ -28,6 +28,10 @@ public class LocalFileStorage {
     public static String SOURCE_BUY_DATA = "yoochoose-buys.dat";
     public static String SOURCE_CLICK_DATA = "yoochoose-clicks.dat";
     public static String SOURCE_TEST_DATA = "yoochoose-test.dat";
+    public static String POPULARITY_ORDERED_ITEM = "popularity-ordered-item.dat";
+    public static String ITEM_DOCUMENTS = "item-documents.dat";
+    public static String MODEL_NAME = "model-00900";
+    public static String TOPIC_FILE = MODEL_NAME + ".twords";
     public static void write(Object idSet, String name) {
         String s = "";
         try {
@@ -36,6 +40,16 @@ public class LocalFileStorage {
             Path file = Paths.get("data/" + name);
             file.toFile().createNewFile();
             Files.write(file, lines, Charset.forName("UTF-8"), StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void writeByte(byte[] bytes, String name) {
+        try {
+            Path file = Paths.get("data/" + name);
+            file.toFile().createNewFile();
+            Files.write(file, bytes, StandardOpenOption.APPEND);
         } catch (IOException e) {
             e.printStackTrace();
         }

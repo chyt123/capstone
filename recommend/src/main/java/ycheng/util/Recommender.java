@@ -1,15 +1,43 @@
 package ycheng.util;
 
+import jgibblda.Inferencer;
+import jgibblda.LDACmdOption;
+import jgibblda.Model;
+import ycheng.database.LocalFileStorage;
 import ycheng.model.IdSet;
+import ycheng.service.Application;
+
+import java.io.IOException;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Created by ycheng on 9/6/17.
  */
 public class Recommender {
-    private Filter filter = new Filter();
+    private Filter filter;
+    private static Inferencer inferencer;
 
-    public int[] recommendTest(IdSet<Integer> idSet, int limit, int sampleCount, int threshold) {
+    public Recommender(boolean lda) {
+        if (lda) {
+            LDACmdOption ldaOption = new LDACmdOption();
+            ldaOption.inf = true;
+            ldaOption.dir = "data/";
+            ldaOption.modelName = LocalFileStorage.MODEL_NAME;
+            ldaOption.niters = 200;
+            inferencer = new Inferencer();
+            inferencer.init(ldaOption);
+        }
+
+        filter = new Filter(lda);
+    }
+
+    public static Inferencer getInferencer() {
+        return inferencer;
+    }
+
+
+    public int[] recommendTest(IdSet<Integer> idSet, int limit, int sampleCount, int threshold, String type) {
 
         List<Integer> sampleItems = new LinkedList<>();
         for (Integer sample : idSet.getSet()) {
@@ -19,7 +47,13 @@ public class Recommender {
         }
 
         Date start = new Date();
-        List<Integer> rec = recommendBySimpleItemKNN(limit, sampleItems, threshold);
+        List<Integer> rec = null;
+        if (type.equalsIgnoreCase("itemknn"))
+            rec = recommendBySimpleItemKNN(limit, sampleItems, threshold);
+        else if (type.equalsIgnoreCase("popularity"))
+            rec = recommendByPopularity(limit, sampleItems);
+        else if (type.equalsIgnoreCase("lda"))
+            rec = recommendByLDA(limit, sampleItems);
         Date end = new Date();
         if (rec == null) {
             return null;
@@ -47,6 +81,82 @@ public class Recommender {
         res[2] = (int)(end.getTime() - start.getTime());
 
         return res;
+    }
+
+    public List<Integer> recommendByLDA(int limit, List<Integer> sampleItems) {
+        String s = "";
+        for(Integer i : sampleItems) {
+            s += i;
+            s += " ";
+        }
+        s = s.substring(0, s.length() - 1);
+        String[] ss = new String[1];
+        ss[0] = s;
+        Model m = inferencer.inference(ss);
+        m.saveModel("sample-data");
+
+        String st;
+        try(Stream<String> stream = LocalFileStorage.read("sample-data.tassign")) {
+            st = stream.findFirst().get();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        String[] sa = st.split(" ");
+        Map<Integer, Integer> topicCount = new HashMap<>();
+        for (String saa : sa) {
+            String[] saaa = saa.split(":");
+            int topic = Integer.parseInt(saaa[1]);
+            int tmp = topicCount.getOrDefault(topic, 0);
+            topicCount.put(topic, tmp+1);
+        }
+
+
+        Map<Integer, Double> all = new HashMap<>();
+        for (Map.Entry<Integer, Integer> entry : topicCount.entrySet()) {
+            Map<Integer, Double> mmm = filter.getTopItemByTopic(entry.getKey(), limit * 2);
+            for (Map.Entry<Integer, Double> entry2 : mmm.entrySet()) {
+                if (sampleItems.contains(entry2.getKey())) continue;
+                double d = all.getOrDefault(entry2.getKey(), 0.0);
+                all.put(entry2.getKey(), d + entry2.getValue() * (double)entry.getValue());
+
+            }
+        }
+
+
+        Comparator<Map.Entry<Integer, Double>> comparator = (o1, o2) -> {
+            if ((o1.getValue() - o2.getValue()) >= 0) {
+                return 1;
+            } else {
+                return -1;
+            }
+        };
+
+        Stack<Integer> res = new Stack<>();
+
+        PriorityQueue<Map.Entry<Integer, Double>> prq = new PriorityQueue<>(comparator);
+
+        for (Map.Entry<Integer, Double> entry2 : all.entrySet()) {
+            prq.add(entry2);
+            if (prq.size() > limit) {
+                prq.remove();
+            }
+        }
+
+        while (!prq.isEmpty()) {
+            Map.Entry<Integer, Double> e = prq.poll();
+            res.push(e.getKey());
+        }
+
+        List<Integer> list = new LinkedList<>();
+        list.addAll(res);
+        return list;
+    }
+
+    public List<Integer> recommendByPopularity(int limit, List<Integer> sampleItems) {
+        return filter.getTopPopularityItem(limit);
     }
 
     public List<Integer> recommendBySimpleItemKNN(int limit, List<Integer> sampleItems, int threshold) {

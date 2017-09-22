@@ -14,7 +14,7 @@ public interface RecommendAlgorithm {
     /**
      * train a item recommend model and save the model to file
      */
-    void train(Stream buyRecords, Stream clickRecords);
+    void train(List<String> buyRecords, List<String> clickRecords);
 
 
     /**

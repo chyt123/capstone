@@ -13,6 +13,14 @@ public class RecommendAlgorithmFactory {
             return new ItemKNN();
         }
 
+        if (name.equalsIgnoreCase("popularity")) {
+            return new PopularityBased();
+        }
+
+        if (name.equalsIgnoreCase("lda")) {
+            return new LDA();
+        }
+
         return null;
     }
 }
